@@ -4,7 +4,7 @@
 **Analysis Period:** November 3-4, 2025  
 **Total Sessions Analyzed:** 11  
 **Total User Prompts:** 99  
-**Project Path:** `/Users/hancengiz/code/youtube-transcript-mcp`  
+**Project Path:** `/Users/<username>/code/youtube-transcript-mcp`  
 **Prompt Coach Version:** 1.7.0
 
 ---
@@ -105,7 +105,7 @@ First, let's create a cloud MD file to plan for this.
 this is a reference mcp tool I built use the this as a learning source
 of how to properly create an mcp and what kind of project structure and
 document to be created. use nodjs typescript
-/Users/hancengiz/code/read_pdf_as_text_mcp
+/Users/<username>/code/pdf-reader-mcp
 ```
 - ✅ Clear intent (learn from reference)
 - ✅ Specific file path provided
@@ -116,7 +116,7 @@ document to be created. use nodjs typescript
 ```
 @agent-youtube-transcript-analyzer what was the ironman metaphor karpathy
 gave in this video? I love it but forgot how it was exactly, quote him
-directly and explain? https://www.youtube.com/watch?v=LCEmiRjPEtQ
+directly and explain? https://www.youtube.com/watch?v=<VIDEO_ID>
 ```
 - ✅ Agent invoked correctly
 - ✅ Specific question (Iron Man metaphor)
@@ -147,7 +147,7 @@ https://github.com/yt-dlp/yt-dlp/blob/master/test/test_subtitles.py
 6. **Feature Request with Context** (Score: 9/10)
 ```
 give me key learnings from this video
-https://www.youtube.com/watch?v=LCEmiRjPEtQ
+https://www.youtube.com/watch?v=<VIDEO_ID>
 ```
 - ✅ Clear deliverable (key learnings)
 - ✅ Source URL provided
@@ -156,7 +156,7 @@ https://www.youtube.com/watch?v=LCEmiRjPEtQ
 7. **Configuration Instruction** (Score: 8/10)
 ```
 remove the local mcp registry from claude code and install
-claude mcp add youtube-transcript npx @fabriqa.ai/youtube-transcript-mcp@latest
+claude mcp add youtube-transcript npx @<client-project-1>.ai/youtube-transcript-mcp@latest
 ```
 - ✅ Two-step instruction clear
 - ✅ Exact command provided
@@ -190,7 +190,7 @@ These prompts work but could be more specific or clearer.
    - ⚠️ Could specify exact command or approach
    - Still works because file context visible
 
-2. **"use sub agetn and give me key learnings from this video https://www.youtube.com/watch?v=LCEmiRjPEtQ"** (Score: 6/10)
+2. **"use sub agetn and give me key learnings from this video https://www.youtube.com/watch?v=<VIDEO_ID>"** (Score: 6/10)
    - ✅ URL provided
    - ✅ Deliverable clear
    - ⚠️ Typo ("agetn" instead of "agent")
@@ -212,14 +212,14 @@ These prompts lacked sufficient context or specificity, requiring Claude to ask 
    - ❌ Which video? No URL provided
    - ❌ Typo: "enlighs" instead of "english"
    - ❌ Assumes Claude knows which video from earlier context
-   - ✅ Better: "get the english transcript for https://www.youtube.com/watch?v=LCEmiRjPEtQ"
+   - ✅ Better: "get the english transcript for https://www.youtube.com/watch?v=<VIDEO_ID>"
    - **Time lost:** ~1 minute (Claude needs to infer from conversation)
 
-2. **"test our fetcher for this videohttps://www.youtube.com/watch?v=Gnl833wXRz0"** (Score: 4/10)
+2. **"test our fetcher for this videohttps://www.youtube.com/watch?v=<VIDEO_ID>"** (Score: 4/10)
    - ❌ Missing space after "video"
    - ❌ "our fetcher" - which one? (though conversation context helps)
    - ⚠️ Would work but shows rushed typing
-   - ✅ Better: "test the YouTube transcript fetcher with this video: https://www.youtube.com/watch?v=Gnl833wXRz0"
+   - ✅ Better: "test the YouTube transcript fetcher with this video: https://www.youtube.com/watch?v=<VIDEO_ID>"
    - **Time lost:** ~30 seconds (minor formatting issue)
 
 3. **"use mcp"** (Score: 3/10)
@@ -265,7 +265,7 @@ While most of your prompts are excellent, here are **13 specific prompts** that 
 
 **What happened:** Claude likely had to infer from conversation history or ask for clarification
 
-✅ **Better prompt:** "get the english transcript for https://www.youtube.com/watch?v=LCEmiRjPEtQ"
+✅ **Better prompt:** "get the english transcript for https://www.youtube.com/watch?v=<VIDEO_ID>"
 
 **Why better:**
 - Explicit URL removes ambiguity
@@ -278,7 +278,7 @@ While most of your prompts are excellent, here are **13 specific prompts** that 
 
 #### Example 2: Formatting Error (Score: 4/10)
 
-❌ **Your prompt:** "test our fetcher for this videohttps://www.youtube.com/watch?v=Gnl833wXRz0"
+❌ **Your prompt:** "test our fetcher for this videohttps://www.youtube.com/watch?v=<VIDEO_ID>"
 
 **Problems:**
 - Missing space between "video" and URL
@@ -288,7 +288,7 @@ While most of your prompts are excellent, here are **13 specific prompts** that 
 
 **What happened:** Claude likely parsed correctly but formatting shows rushed input
 
-✅ **Better prompt:** "test the YouTube transcript fetcher with this video: https://www.youtube.com/watch?v=Gnl833wXRz0"
+✅ **Better prompt:** "test the YouTube transcript fetcher with this video: https://www.youtube.com/watch?v=<VIDEO_ID>"
 
 **Why better:**
 - Proper spacing and formatting
@@ -312,7 +312,7 @@ While most of your prompts are excellent, here are **13 specific prompts** that 
 
 **What happened:** Claude had to ask "Which MCP tool?" and "What do you want to do?"
 
-✅ **Better prompt:** "use the youtube-transcript MCP tool to get the transcript for https://www.youtube.com/watch?v=Gnl833wXRz0"
+✅ **Better prompt:** "use the youtube-transcript MCP tool to get the transcript for https://www.youtube.com/watch?v=<VIDEO_ID>"
 
 **Why better:**
 - Specific tool named
@@ -397,7 +397,7 @@ While most of your prompts are excellent, here are **13 specific prompts** that 
 
 #### Example 7: Typo in Agent Reference (Score: 4/10)
 
-❌ **Your prompt:** "use sub agetn and give me key learnings from this video https://www.youtube.com/watch?v=LCEmiRjPEtQ"
+❌ **Your prompt:** "use sub agetn and give me key learnings from this video https://www.youtube.com/watch?v=<VIDEO_ID>"
 
 **Problems:**
 - Typo: "agetn" instead of "agent"
@@ -407,7 +407,7 @@ While most of your prompts are excellent, here are **13 specific prompts** that 
 
 **What happened:** Claude likely parsed intention but shows rushed input
 
-✅ **Better prompt:** "use the youtube-transcript-analyzer agent to extract key learnings from https://www.youtube.com/watch?v=LCEmiRjPEtQ"
+✅ **Better prompt:** "use the youtube-transcript-analyzer agent to extract key learnings from https://www.youtube.com/watch?v=<VIDEO_ID>"
 
 **Why better:**
 - Specific agent named
@@ -513,7 +513,7 @@ When you need specific analysis, you provide comprehensive instructions:
 @agent-youtube-transcript-analyzer what was the ironman metaphor
 karpathy gave in this video? I love it but forgot how it was exactly,
 quote him directly and explain?
-https://www.youtube.com/watch?v=LCEmiRjPEtQ
+https://www.youtube.com/watch?v=<VIDEO_ID>
 ```
 
 - ✅ Agent properly invoked
@@ -558,7 +558,7 @@ You provide excellent reference materials:
 this is a reference mcp tool I built use the this as a learning source
 of how to properly create an mcp and what kind of project structure and
 document to be created. use nodjs typescript
-/Users/hancengiz/code/read_pdf_as_text_mcp
+/Users/<username>/code/pdf-reader-mcp
 ```
 
 - ✅ Full file path provided

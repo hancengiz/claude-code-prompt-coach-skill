@@ -1,7 +1,7 @@
 ---
 name: "Prompt Coach"
 description: "Analyze your Claude Code session logs to improve prompt quality, optimize tool usage, and become a better AI-native engineer."
-version: "1.7.0"
+version: "1.10.0"
 ---
 
 # Prompt Coach
@@ -29,6 +29,30 @@ This skill teaches Claude how to read and analyze your Claude Code session logs 
 ## 🎯 How to Use This Skill
 
 **IMPORTANT:** This skill **ONLY analyzes logs from THIS machine**. It can only access Claude Code session logs that were created on this computer and are stored locally in `~/.claude/projects/`.
+
+### Quick Start: General Analysis Mode 🌟
+
+**NEW:** Get a comprehensive overview of your Claude Code usage across ALL capabilities!
+
+When you ask for a general analysis, Prompt Coach will provide a complete report covering:
+- 💰 Token usage and costs
+- ✍️ Prompt quality with specific examples
+- 🛠️ Tool usage patterns and MCP adoption
+- ⚡ Session efficiency metrics
+- 🕐 Productivity time patterns
+- 🔥 File modification hotspots
+- 🐛 Error patterns and recovery
+- 🔄 Context switching overhead
+
+**To get a general analysis, simply ask:**
+```
+"Give me a general analysis of my Claude Code usage"
+"Analyze my overall Claude Code usage"
+"Show me a comprehensive report on my coding patterns"
+"What's my overall Claude Code performance?"
+```
+
+This will generate **one comprehensive report** using all 8 analysis capabilities to give you the complete picture.
 
 ### Option 1: Analyze All Projects
 
@@ -505,6 +529,166 @@ All Claude Code sessions are logged at: `~/.claude/projects/`
 
 ## Analysis Tasks
 
+### 0. General Analysis Mode (COMPREHENSIVE REPORT)
+
+**When to trigger:**
+- User asks for "general analysis", "overall analysis", "comprehensive report", "complete overview"
+- User asks "how am I doing with Claude Code?" or "analyze my Claude Code usage"
+- User requests "all metrics", "everything", "full report"
+- When the user first activates this skill and you want to offer value
+
+**IMPORTANT:** This is the **premier feature** of Prompt Coach. When triggered, you will:
+1. Run ALL 8 analysis types (Token Usage, Prompt Quality, Tool Usage, Session Efficiency, Productivity Patterns, File Heatmap, Error Analysis, Context Switching)
+2. Generate ONE comprehensive report combining all insights
+3. Use a subagent via Task tool to handle the complexity
+
+**How to execute:**
+```
+Use the Task tool with general-purpose agent:
+- description: "Generate comprehensive Claude Code analysis report"
+- subagent_type: "general-purpose"
+- prompt: "Analyze all Claude Code session logs in ~/.claude/projects/ from the last 30 days and generate a comprehensive report covering:
+  1. Token Usage & Cost Analysis (with deduplication)
+  2. Prompt Quality Analysis (context-aware scoring)
+  3. Tool Usage Patterns (built-in + MCP tools)
+  4. Session Efficiency Analysis
+  5. Productivity Time Patterns
+  6. File Modification Heatmap
+  7. Error & Recovery Analysis
+  8. Project Switching Analysis
+
+  Follow the analysis guidelines from the Prompt Coach skill (version 1.10.0).
+  Generate one cohesive report with executive summary and all 8 sections.
+  Save the report to [user-specified path or default to ~/claude-code-analysis-report.md]"
+```
+
+**Report Structure:**
+
+```markdown
+# Claude Code Usage Analysis Report
+Generated: [Date]
+Analysis Period: Last 30 days
+
+## 📊 Executive Summary
+
+[High-level overview with key metrics:]
+- Total cost: $X.XX
+- Sessions analyzed: X
+- Average prompt quality: X.X/10
+- Top insight: [Most impactful finding]
+- Biggest opportunity: [What would improve usage most]
+
+---
+
+## 1. 💰 Token Usage & Cost Analysis
+
+[Follow guidelines from "1. Token Usage & Cost Analysis" section]
+- Total tokens breakdown
+- Cost breakdown with cache efficiency
+- Deduplication stats
+- Monthly projection
+
+---
+
+## 2. ✍️ Prompt Quality Analysis
+
+[Follow guidelines from "2. Prompt Quality Analysis" section]
+- Overall quality score
+- Context-rich brief prompts (celebrate these!)
+- Prompts needing improvement (0-4/10 with specific examples)
+- Top 3 actionable recommendations
+
+---
+
+## 3. 🛠️ Tool Usage Patterns
+
+[Follow guidelines from "3. Tool Usage Patterns" section]
+- Built-in tools summary
+- MCP tools detailed breakdown
+- Tool adoption insights
+- Common workflows
+
+---
+
+## 4. ⚡ Session Efficiency Analysis
+
+[Follow guidelines from "4. Session Efficiency Analysis" section]
+- Average iterations per task
+- Session duration patterns
+- Completion rate
+- Quick wins vs deep work
+
+---
+
+## 5. 🕐 Productivity Time Patterns
+
+[Follow guidelines from "5. Productivity Time Patterns" section]
+- Peak productivity hours
+- Day of week patterns
+- Efficiency by time
+- Recommendations for scheduling
+
+---
+
+## 6. 🔥 File Modification Heatmap
+
+[Follow guidelines from "6. File Modification Heatmap" section]
+- Most edited files
+- Hotspot directories
+- Code churn insights
+- Refactoring opportunities
+
+---
+
+## 7. 🐛 Error & Recovery Analysis
+
+[Follow guidelines from "7. Error & Recovery Analysis" section]
+- Common errors
+- Recovery time by error type
+- Patterns and recommendations
+- Prevention strategies
+
+---
+
+## 8. 🔄 Project Switching Analysis
+
+[Follow guidelines from "8. Project Switching Analysis" section]
+- Number of active projects
+- Time distribution
+- Context switching cost
+- Focus optimization tips
+
+---
+
+## 🎯 Top 5 Recommendations
+
+[Synthesize the most impactful recommendations across all 8 analyses]
+
+1. **[Recommendation with biggest ROI]**
+   - Impact: [Time saved / cost reduced / quality improved]
+   - How to implement: [Specific action steps]
+
+2. **[Second most impactful]**
+   ...
+
+[Continue for top 5]
+
+---
+
+## 💡 Next Steps
+
+[3-5 concrete action items the user should take this week]
+
+1. [ ] [Specific, measurable action]
+2. [ ] [Specific, measurable action]
+3. [ ] [Specific, measurable action]
+
+---
+
+*Report generated by Prompt Coach v1.10.0*
+*Analysis based on session logs from ~/.claude/projects/*
+```
+
 ### 1. Token Usage & Cost Analysis
 
 **When asked about tokens, costs, or spending:**
@@ -517,42 +701,142 @@ All Claude Code sessions are logged at: `~/.claude/projects/`
 
 2. Read a representative sample of files (5-10 recent ones)
 
-3. Parse each line as JSON and extract `usage` data:
+3. **CRITICAL: Deduplicate entries** to match actual billing:
+   - Track processed `message.id + requestId` combinations in a Set
+   - Skip duplicate entries (Claude Code logs streaming responses multiple times)
+   - Only count each unique API call once
+
+   **Deduplication logic:**
+   ```
+   For each line in JSONL:
+     - Extract message.id and requestId
+     - Create hash: `${message.id}:${requestId}`
+     - If hash already processed: SKIP this entry
+     - Otherwise: mark hash as processed and count tokens
+   ```
+
+4. Parse each **unique** entry and extract `usage` data:
    - `input_tokens`
    - `output_tokens`
    - `cache_creation_input_tokens`
    - `cache_read_input_tokens`
 
-4. Calculate costs using current pricing:
-   - **Input tokens**: $3 per 1M tokens
-   - **Output tokens**: $15 per 1M tokens
-   - **Cache writes**: $3.75 per 1M tokens
-   - **Cache reads**: $0.30 per 1M tokens
+5. **CRITICAL: Use model-specific pricing** - Extract model from `message.model` field:
 
-5. Present breakdown:
-   - Total tokens by type
-   - Cost breakdown
+   **Claude API Pricing (Current as of Nov 2025):**
+
+   | Model | Input | Output | Cache Writes | Cache Reads |
+   |-------|-------|--------|--------------|-------------|
+   | **Opus 4.1** (`claude-opus-4-1-*`) | $15/1M | $75/1M | $18.75/1M | $1.50/1M |
+   | **Sonnet 4.5** (`claude-sonnet-4-5-*`) ≤200K | $3/1M | $15/1M | $3.75/1M | $0.30/1M |
+   | **Sonnet 4.5** (`claude-sonnet-4-5-*`) >200K | $6/1M | $22.50/1M | $7.50/1M | $0.60/1M |
+   | **Haiku 4.5** (`claude-haiku-4-5-*`) | $1/1M | $5/1M | $1.25/1M | $0.10/1M |
+   | **Haiku 3.5** (`claude-haiku-3-5-*`) | $0.80/1M | $4/1M | $1/1M | $0.08/1M |
+   | **Opus 3** (`claude-3-opus-*`) | $15/1M | $75/1M | $18.75/1M | $1.50/1M |
+
+   **NOTE:** Opus is 5x more expensive than Sonnet!
+
+   **Model Detection:**
+   ```
+   For each unique entry:
+     - Extract model from message.model field
+     - Match model name to pricing table
+     - Group tokens by model
+     - Calculate cost per model using correct rates
+   ```
+
+6. **Understand your pricing model** and tailor recommendations:
+
+   📊 **For Pay-Per-Use Users (API billing):**
+   - Cost optimization IS directly relevant
+   - Switching to Haiku for simple tasks saves money
+   - Model selection has immediate cost impact
+   - Cache optimization reduces billable tokens
+
+   📊 **For Subscription Users (Claude Pro, Team, Enterprise):**
+   - Cost optimization recommendations are LESS relevant
+   - **BUT cache optimization is STILL valuable** because:
+     - ⚡ **Faster responses** - Anthropic caches your context server-side for ~5 minutes
+     - ⚡ **Better UX** - Less waiting for context to process
+     - ⚡ **Improved efficiency** - Claude can respond faster with cached context
+     - ⚡ **Rate limit benefits** - Better cache usage may help with rate limits
+   - Focus on **session efficiency** and **prompt quality** instead of model costs
+
+   💡 **How to tell which pricing model you're on:**
+   - If these costs matter to your budget → You're pay-per-use
+   - If you pay a fixed monthly fee → You're on subscription
+   - When in doubt, ask the user!
+
+7. Present breakdown:
+   - Total tokens by type (deduplicated)
+   - Cost breakdown (matches actual billing)
    - Cache efficiency (savings from cache reads)
    - Breakdown by model if multiple models used
    - Monthly projection if analyzing less than a month
+   - **Deduplication stats**: Show how many duplicates were skipped
 
 **Example Output:**
 ```
 📊 Token Usage Analysis (Last 30 Days)
 
-Input tokens:        450,000 ($1.35)
-Output tokens:       125,000 ($1.88)
-Cache writes:        200,000 ($0.75)
-Cache reads:       1,500,000 ($0.45)
-                    ─────────────────
-Total cost:                   $4.43
-Cache savings:                $4.05
+💰 **Total Cost: $288.13** (matches actual Anthropic billing)
 
-Cache efficiency: 75% hit rate
-Models used: claude-sonnet-4-5, claude-haiku-4-5
+## By Model:
 
-💡 Tip: Your cache hit rate is excellent! You're saving ~$4/month
-by keeping focused sessions.
+**Sonnet 4.5** (3,662 calls, 81.2%)
+- Input:        191,659 ($0.58)
+- Output:       135,505 ($2.03)
+- Cache writes: 20,010,946 ($75.04)
+- Cache reads:  240,989,306 ($72.30)
+- **Subtotal: $149.95**
+
+**Opus 4.1** (769 calls, 17.1%)
+- Input:        3,176 ($0.05)
+- Output:       30,440 ($2.28)
+- Cache writes: 2,595,837 ($48.67)
+- Cache reads:  57,156,831 ($85.74)
+- **Subtotal: $136.74** ⚠️ 5x more expensive than Sonnet!
+
+**Haiku 4.5** (77 calls, 1.7%)
+- Input:        54,265 ($0.05)
+- Output:       19,854 ($0.10)
+- Cache writes: 93,590 ($0.12)
+- Cache reads:  666,241 ($0.07)
+- **Subtotal: $0.34**
+
+📋 Deduplication Summary:
+- Total entries found: 44,036
+- Duplicate entries: 6,444 (14.6%)
+- Unique API calls: 4,508
+- Duplication factor: 9.77x
+
+⚡ Cache Efficiency: 99.9% hit rate
+💰 Cache savings: $806.79
+
+---
+
+## 💡 Recommendations
+
+**📌 For Pay-Per-Use Users:**
+
+Your Opus usage (17.1%) costs $136.74 - that's 91% of your total spend!
+- Consider using Sonnet for complex tasks instead (5x cheaper)
+- Reserve Opus for truly difficult problems only
+- **Potential savings:** ~$80-100/month by shifting Opus → Sonnet
+
+**📌 For Subscription Users:**
+
+Cache optimization is still valuable for speed:
+- Keep sessions focused on single tasks (maintains cache)
+- Avoid context switching (breaks cache, slows responses)
+- Your 99.9% cache hit rate is excellent - keep it up!
+
+**📌 For Everyone:**
+
+Haiku is underutilized (1.7% of calls):
+- Perfect for: file reads, basic edits, simple commands
+- Consider using Haiku for 20-30% of tasks
+- Much faster responses for simple operations
 ```
 
 ### 2. Prompt Quality Analysis
@@ -948,39 +1232,74 @@ Based on these X examples, watch out for:
 
 3. Count usage by tool name
 
-4. Identify patterns:
-   - Most used tools
-   - Underutilized tools
-   - Common workflows (sequences of tools)
+4. **Group tools into categories:**
+   - **Built-in Claude Code tools**: Read, Write, Edit, Bash, Grep, Glob, Task, TodoWrite, WebFetch, WebSearch, NotebookEdit, SlashCommand
+   - **MCP/3rd party tools**: Any tool starting with `mcp__` or custom tools
+   - Parse MCP tool names to extract server name (e.g., `mcp__playwright__navigate` → playwright server)
+
+5. Identify patterns:
+   - Total built-in tool usage (one summary line)
+   - Individual MCP tool usage (detailed breakdown)
+   - MCP server adoption (which servers are being used)
+   - Common workflows with MCP tools
    - Tool success/failure rates
 
-5. Provide recommendations
+6. Provide recommendations focused on MCP tool adoption and usage
 
 **Example Output:**
 ```
 🛠️ Tool Usage Patterns (Last 30 Days)
 
-Most used tools:
-1. Read         ████████████████████ 450 uses
-2. Edit         ████████████         220 uses
-3. Bash         ███████              150 uses
-4. Write        ████                  89 uses
-5. Grep         ██                    34 uses
-6. Glob         █                     12 uses
+Built-in Claude Code Tools:
+└─ Total: 955 uses (Read: 450, Edit: 220, Bash: 150, Write: 89, Grep: 34, Glob: 12)
+
+🌟 MCP & 3rd Party Tools:
+1. playwright (server)          ████████████████████ 287 uses
+   ├─ navigate                   98 uses
+   ├─ screenshot                 76 uses
+   ├─ click                      54 uses
+   ├─ fill                       32 uses
+   └─ evaluate                   27 uses
+
+2. browserbase (server)         ████████████         156 uses
+   ├─ stagehand_navigate         45 uses
+   ├─ stagehand_act              52 uses
+   ├─ stagehand_extract          39 uses
+   └─ screenshot                 20 uses
+
+3. youtube-transcript (server)  ████                  34 uses
+   └─ get-transcript             34 uses
+
+4. pdf-reader (server)          ██                    18 uses
+   ├─ read-pdf                   12 uses
+   └─ search-pdf                  6 uses
 
 💡 Insights:
 
-✅ Good: You use Read heavily - shows careful code review
-⚠️  Opportunity: Low Grep usage (34 uses vs 450 Reads)
-   → Try Grep for searching across multiple files
-   → It's much faster than reading each file
+🌟 Great MCP adoption! You're using 4 different MCP servers
+   → 495 MCP tool calls vs 955 built-in tools
+   → MCP tools account for 34% of your tool usage
 
-✅ Good: High Edit vs Write ratio (220:89)
-   → You prefer modifying existing code over creating new files
+✅ Playwright is your most-used MCP server
+   → Heavily used for browser automation
+   → Good mix of navigation, interaction, and screenshots
 
-📊 Common workflows:
-1. Grep → Read → Edit (45 times) - Good pattern for refactoring
-2. Read → Read → Read → Edit (89 times) - Could use Grep first
+🚀 Browserbase + Stagehand pattern detected
+   → You're leveraging AI-powered browser control
+   → 156 uses show strong automation workflow
+
+💡 Opportunity: Consider these MCP servers you haven't tried:
+   → @modelcontextprotocol/server-filesystem for advanced file ops
+   → @modelcontextprotocol/server-sqlite for database work
+   → @modelcontextprotocol/server-github for PR/issue management
+
+📊 Common MCP workflows:
+1. playwright navigate → screenshot → click (23 times)
+   → Browser testing/automation pattern
+2. browserbase navigate → stagehand_extract (15 times)
+   → Data scraping pattern
+3. youtube-transcript get-transcript → Edit (12 times)
+   → Video content analysis workflow
 ```
 
 ### 4. Session Efficiency Analysis
@@ -1268,7 +1587,16 @@ find ~/.claude/projects -name "*.jsonl" | wc -l
 
 ## Example Queries You Can Answer
 
-### General Analysis (All Projects)
+### 🌟 General Analysis (Comprehensive Report - NEW!)
+- **"Give me a general analysis of my Claude Code usage"** ← Recommended!
+- **"Analyze my overall Claude Code usage"** ← Recommended!
+- "Show me a comprehensive report on my coding patterns"
+- "What's my overall Claude Code performance?"
+- "How am I doing with Claude Code?"
+- "Generate a full report on everything"
+- "Analyze all my metrics"
+
+### Specific Analysis (Individual Metrics)
 - "How much have I spent on Claude Code this month?"
 - "Am I writing good prompts?"
 - "What tools do I use most?"
@@ -1302,3 +1630,7 @@ find ~/.claude/projects -name "*.jsonl" | wc -l
 - Give actionable, personalized recommendations
 - Be encouraging but honest about areas for improvement
 - Calculate costs accurately with current pricing
+- **CRITICAL (v1.8.0+):** Always deduplicate token usage entries using `message.id + requestId` hash to match actual billing. Claude Code logs streaming responses multiple times with the same IDs - only count each unique API call once.
+- **CRITICAL (v1.10.0+):** Always use model-specific pricing. Extract model from `message.model` field and apply correct rates. Opus is 5x more expensive than Sonnet!
+- **NEW (v1.10.0+):** Tailor cost optimization recommendations based on user's pricing model (pay-per-use vs subscription). Cache optimization is valuable for BOTH but for different reasons.
+- **NEW (v1.9.0+):** When users ask for general/overall/comprehensive analysis, generate ONE complete report using ALL 8 analysis types via a subagent (see "0. General Analysis Mode" section)
