@@ -21,7 +21,7 @@ This skill teaches Claude how to read and analyze your Claude Code session logs 
 Run the install script:
 
 ```bash
-cd ~/code/claude-code-prompt-coach
+cd ~/code/claude-code-prompt-coach-skill
 ./install.sh
 ```
 
@@ -39,7 +39,7 @@ Restart Claude Code and you're done!
 Copy the skill directory to your Claude skills folder:
 
 ```bash
-cp -r ~/code/claude-code-prompt-coach ~/.claude/skills/prompt-coach
+cp -r ~/code/claude-code-prompt-coach-skill ~/.claude/skills/prompt-coach
 ```
 
 ### For Development (Symlink)
@@ -47,7 +47,7 @@ cp -r ~/code/claude-code-prompt-coach ~/.claude/skills/prompt-coach
 Create a symlink to the skill directory:
 
 ```bash
-ln -s ~/code/claude-code-prompt-coach ~/.claude/skills/prompt-coach
+ln -s ~/code/claude-code-prompt-coach-skill ~/.claude/skills/prompt-coach
 ```
 
 Now you can edit `Skill.md` and changes take effect on next Claude Code restart.
