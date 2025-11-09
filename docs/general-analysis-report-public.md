@@ -597,13 +597,13 @@ For projects averaging <10 min/session:
 
 | Rank | Edits | File Path |
 |------|-------|-----------|
-| 1 | 11 | `/Users/<username>/code/obsidian/README.md` |
+| 1 | 11 | `/Users/<username>/code/<personal-project-4>/README.md` |
 | 2 | 8 | `/Users/<username>/code/<personal-project-1>/README.md` |
 | 3 | 4 | `.../blog-posts/posts/claude-code-prompt-coach-skill/post.md` |
 | 4 | 3 | `/Users/<username>/code/<test-project>/README.md` |
 | 5 | 3 | `/Users/<username>/code/<test-project>/notes.md` |
-| 6 | 3 | `.../obsidian/automation/scripts/research_executor.js` |
-| 7 | 3 | `/Users/<username>/code/obsidian/package.json` |
+| 6 | 3 | `.../<personal-project-4>/automation/scripts/research_executor.js` |
+| 7 | 3 | `/Users/<username>/code/<personal-project-4>/package.json` |
 | 8 | 2 | `.../claude-code-prompt-coach-skill/Skill.md` |
 | 9 | 2 | `/Users/<username>/.mcp.json` |
 | 10 | 2 | `.../<personal-project-1>/src/main.py` |
@@ -612,7 +612,7 @@ For projects averaging <10 min/session:
 
 Based on file paths:
 
-**1. `/code/obsidian/` (Multiple files)**
+**1. `/code/<personal-project-4>/` (Multiple files)**
 - **README.md:** 11 edits - Documentation iteration
 - **automation/scripts/:** 6+ edits across multiple scripts
 - **package.json:** 3 edits - Dependency management
@@ -652,7 +652,7 @@ Based on file paths:
 
 #### ⚠️ Potential Code Smells
 
-**obsidian/README.md (11 edits)**
+**<personal-project-4>/README.md (11 edits)**
 - High edit frequency might indicate:
   - ✅ Active documentation improvement (good!)
   - ⚠️ Unclear initial requirements
@@ -808,7 +808,7 @@ Create error runbook:
 | dotfiles | 10 | 20 min | 2.0 min |
 | <personal-project-3> | 7 | 123 min | 17.6 min |
 | <client-project-1> | 6 | 18,426 min | 3,071 min |
-| obsidian | 5 | 830 min | 166 min |
+| <personal-project-4> | 5 | 830 min | 166 min |
 | domain-finder | 4 | 137 min | 34.3 min |
 | *7 others* | <4 each | Variable | Variable |
 
@@ -831,7 +831,7 @@ Create error runbook:
 - **Combined:** 47% of total time in just 2 projects
 
 **Medium concentration (3-5 projects):**
-- youtube-transcript-mcp, obsidian, <personal-project-1>
+- youtube-transcript-mcp, <personal-project-4>, <personal-project-1>
 - **Combined:** ~25% of total time
 
 **Low concentration (remaining 12 projects):**
@@ -882,7 +882,7 @@ Create error runbook:
 
 **Maintenance Projects (batch work):**
 1. dotfiles
-2. obsidian
+2. <personal-project-4>
 3. <personal-project-3>
 4. <personal-project-1>
 
