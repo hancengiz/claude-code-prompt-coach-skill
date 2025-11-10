@@ -137,8 +137,8 @@ where do you get the transcript from etc urls and flow not code details
 
 5. **Technical Investigation** (Score: 8/10)
 ```
-how does yt-dlp work?
-https://github.com/yt-dlp/yt-dlp/blob/master/test/test_subtitles.py
+how does xyz work?
+https://github.com/xyz/xyz/xyz.py
 ```
 - ✅ Specific tool (yt-dlp)
 - ✅ Reference file provided
@@ -156,7 +156,7 @@ https://www.youtube.com/watch?v=<VIDEO_ID>
 7. **Configuration Instruction** (Score: 8/10)
 ```
 remove the local mcp registry from claude code and install
-claude mcp add youtube-transcript npx @<client-project-1>.ai/youtube-transcript-mcp@latest
+claude mcp add youtube-transcript npx @fabriqa.ai/youtube-transcript-mcp@latest
 ```
 - ✅ Two-step instruction clear
 - ✅ Exact command provided
