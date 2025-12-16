@@ -1,21 +1,29 @@
 # Prompt Coach - Claude Code Usage Analytics Skill
 
-A Claude Code skill that analyzes your session logs to provide insights about your coding patterns, token usage, productivity, and prompt quality.
+A Claude Code skill that analyzes your session logs OR current conversations to provide insights about your coding patterns, token usage, productivity, and prompt quality. Works in Claude Code CLI, GitHub Copilot Chat, and any environment with Claude skills support.
 
 ## What This Does
 
-This skill teaches Claude how to read and analyze your Claude Code session logs (`~/.claude/projects/*.jsonl`) to help you:
+This skill teaches Claude how to analyze your coding sessions in two ways:
 
-- ✍️ **Improve prompt quality** - Learn if your prompts are clear and effective
-- 🎯 **See real examples** - Analyze actual vague prompts from your logs with before/after improvements
-- 💰 **Calculate time savings** - Understand the cost of unclear prompts (time + iterations)
-- 📋 **Get actionable templates** - Receive specific prompt templates for common tasks
-- 🛠️ **Optimize tool usage** - Discover underutilized powerful tools
-- ⚡ **Boost efficiency** - Understand how many iterations you need per task
-- 🕐 **Find peak hours** - Know when you're most productive
-- 🔥 **Identify code hotspots** - See which files you edit most
-- 🔄 **Reduce context switching** - Measure project switching overhead
-- 🐛 **Learn from errors** - Understand common problems and recovery patterns
+### 📊 Historical Analysis (Claude Code logs)
+Analyze your Claude Code session logs (`~/.claude/projects/*.jsonl`):
+- 💰 **Token usage & costs** - Track spending across models (Opus, Sonnet, Haiku)
+- ✍️ **Prompt quality** - Learn if your prompts are clear and effective
+- 🎯 **Real examples** - See actual vague prompts from your logs with before/after improvements
+- 🛠️ **Tool usage** - Discover underutilized powerful tools and MCP adoption
+- ⚡ **Session efficiency** - Understand how many iterations you need per task
+- 🕐 **Productivity patterns** - Know when you're most productive
+- 🔥 **Code hotspots** - See which files you edit most
+- 🔄 **Context switching** - Measure project switching overhead
+- 🐛 **Error patterns** - Understand common problems and recovery
+
+### 💬 Current Conversation Analysis (NEW!)
+Analyze the conversation happening right now:
+- ✍️ **Real-time prompt feedback** - Get instant coaching on your prompts
+- 🎯 **Context-aware analysis** - Detects vague vs clear prompts
+- 📋 **Actionable suggestions** - Receive specific improvements
+- 🤝 **Cross-platform** - Works in Copilot Chat, Claude Code, anywhere with Claude skills
 
 ## Installation
 
@@ -54,6 +62,23 @@ ln -s ~/code/claude-code-prompt-coach-skill ~/.claude/skills/prompt-coach
 ```
 
 Now you can edit `Skill.md` and changes take effect on next Claude Code restart.
+
+### For GitHub Copilot Chat Users 🤝
+
+1. Install the skill using one of the methods above
+2. Enable Claude skills in VS Code:
+   - Open VS Code Settings (`Cmd+,` or `Ctrl+,`)
+   - Search for `chat.useClaudeSkills`
+   - Set to `true`
+3. Restart VS Code
+4. In Copilot Chat window, invoke skill naturally:
+   ```
+   "Analyze this conversation using Prompt Coach"
+   "Review my prompt quality in this chat"
+   "How good are my prompts in this conversation?"
+   ```
+
+**Note:** In Copilot Chat, only **prompt quality analysis** is available (no token usage, tool tracking, or time patterns since the conversation context doesn't include that metadata).
 
 ## Usage
 
@@ -101,6 +126,55 @@ If you know the project path, analyze just that project:
 ```
 
 This analyzes **only the logs for that specific project**, giving you focused insights.
+
+### Option 4: Analyze Current Conversation 💬
+
+**NEW!** You can analyze the conversation happening right now without needing log files:
+
+```
+"Analyze this conversation"
+"How good are my prompts in this chat?"
+"Review the prompt quality in this current session"
+"Give me feedback on this conversation"
+```
+
+Claude will review all user prompts in the current conversation, score them, and provide specific improvement suggestions.
+
+**Perfect for:**
+- Quick feedback while chatting (especially in Copilot Chat)
+- Learning prompt engineering in real-time
+- Getting instant coaching without historical data
+
+**Limitations:** Only prompt quality analysis available (no token/cost data, tool tracking, or time patterns).
+
+## Use Cases
+
+### Scenario 1: Real-time Learning (Copilot Chat)
+You're working in VS Code with Copilot Chat and want to improve your prompts:
+
+```
+You: "Create a login form component"
+Copilot: [creates component]
+You: "Add validation"
+Copilot: [adds validation]
+You: "Analyze this conversation"
+Copilot: *Reviews your prompts and provides scores/suggestions:
+  - "Create a login form component" (7/10) - Good but could specify framework
+  - "Add validation" (5/10) - Vague - which fields? What validation rules?
+  Suggestions: Be specific about requirements upfront...*
+```
+
+### Scenario 2: Historical Analysis (Claude Code)
+You want comprehensive metrics on your Claude Code usage:
+
+```bash
+claude
+
+You: "Give me a general analysis of my Claude Code usage"
+Claude: *Reads logs, analyzes tokens, tools, time patterns, etc.
+        Generates comprehensive report with cost breakdown,
+        prompt quality scores, tool usage heatmap, and more*
+```
 
 ## Example Output
 
