@@ -2,6 +2,8 @@
 
 A Claude Code skill that analyzes your session logs to provide insights about your coding patterns, token usage, productivity, and prompt quality.
 
+https://www.cengizhan.com/p/claude-code-prompt-coach-skill-to
+
 ## What This Does
 
 This skill teaches Claude how to read and analyze your Claude Code session logs (`~/.claude/projects/*.jsonl`) to help you:
