@@ -1,7 +1,7 @@
 ---
 name: "Prompt Coach"
-description: "Analyze your Claude Code session logs to improve prompt quality, optimize tool usage, and become a better AI-native engineer."
-version: "1.10.0"
+description: "Analyze Claude Code session logs OR current conversations to improve prompt quality and become a better AI-native engineer. Works in Claude Code, Copilot Chat, and any environment with Claude skills."
+version: "1.11.0"
 ---
 
 # Prompt Coach
@@ -28,7 +28,29 @@ This skill teaches Claude how to read and analyze your Claude Code session logs 
 
 ## 🎯 How to Use This Skill
 
-**IMPORTANT:** This skill **ONLY analyzes logs from THIS machine**. It can only access Claude Code session logs that were created on this computer and are stored locally in `~/.claude/projects/`.
+### 🔍 Automatic Mode Detection
+
+This skill can analyze two types of data:
+
+**Mode 1: Historical Log Analysis** (Claude Code sessions)
+- Analyzes `.jsonl` files from `~/.claude/projects/`
+- Provides comprehensive metrics (tokens, costs, tools, etc.)
+- Requires logs from Claude Code CLI
+
+**Mode 2: Current Conversation Analysis** (Live session)
+- Analyzes the current conversation in this window
+- Works in any environment (Copilot Chat, Claude Code, etc.)
+- Focuses on prompt quality analysis only
+
+**Automatic Detection:**
+Claude will automatically determine which mode to use:
+- If you specify a project path or "all projects" → Historical mode
+- If you say "analyze this conversation" or "current chat" → Current conversation mode
+- If unclear, Claude will ask which you prefer
+
+---
+
+**IMPORTANT for Historical Analysis:** This mode **ONLY analyzes logs from THIS machine**. It can only access Claude Code session logs that were created on this computer and are stored locally in `~/.claude/projects/`.
 
 ### Quick Start: General Analysis Mode 🌟
 
@@ -171,6 +193,40 @@ Claude will automatically find the corresponding log directory.
 - ❌ Projects you worked on elsewhere
 - ❌ Deleted or archived session logs
 - ❌ Sessions from other Claude interfaces (web, mobile)
+
+### Option 4: Analyze Current Conversation 💬
+
+**NEW:** You can analyze the conversation happening **right now** without needing log files!
+
+**When to use this:**
+- You're chatting in Copilot Chat, Claude Code, or any environment with Claude skills
+- You want immediate feedback on your prompt quality
+- You don't have historical logs (or don't want to analyze them)
+
+**Example queries:**
+```
+"Analyze the prompt quality in this conversation"
+"How good are my prompts in this chat?"
+"Review this current conversation for prompt quality"
+"Analyze this chat and tell me how to improve"
+```
+
+**What Claude will do:**
+1. Review all user prompts in the current conversation
+2. Check if prompts needed clarification
+3. Detect context-rich vs vague patterns
+4. Score prompt quality (0-10)
+5. Provide specific improvement suggestions
+
+**Limitations:**
+- ✅ Available: Prompt quality analysis
+- ❌ Not available: Token usage, tool tracking, file heatmaps, time patterns
+- ❌ Reason: Current conversation doesn't include metadata (tokens, timestamps, etc.)
+
+**Perfect for:**
+- Quick feedback while chatting
+- Learning prompt engineering in real-time
+- Comparing prompts across different tools (Copilot vs Claude Code)
 
 ## Prompt Engineering Best Practices (Claude Official Guidelines)
 
@@ -527,6 +583,38 @@ All Claude Code sessions are logged at: `~/.claude/projects/`
 - `TodoWrite` - Managing todo lists
 - `mcp__*` - Various MCP server tools
 
+## Current Conversation Format
+
+When analyzing the **current conversation** (not log files), messages are available in Claude's context with this structure:
+
+**User Message:**
+- Role: "user"
+- Content: The user's prompt text
+- Available in conversation history
+
+**Assistant Message:**
+- Role: "assistant"
+- Content: The assistant's response
+- May include text and tool calls
+- Available in conversation history
+
+**Key Differences from Log Files:**
+- ❌ No `type` field (just `role`)
+- ❌ No `timestamp` field
+- ❌ No `usage` field (token counts)
+- ❌ No `sessionId` or UUIDs
+- ❌ No tool result details
+- ✅ Has sequential message order
+- ✅ Has user/assistant role alternation
+- ✅ Has complete conversation context
+
+**Parsing Strategy:**
+1. Review conversation history from beginning to current message
+2. Identify messages with `role: "user"` as user prompts
+3. Identify messages with `role: "assistant"` as Claude's responses
+4. Analyze prompt-response pairs sequentially
+5. Apply same context-aware analysis logic as file-based analysis
+
 ## Analysis Tasks
 
 ### 0. General Analysis Mode (COMPREHENSIVE REPORT)
@@ -863,12 +951,62 @@ Use Task tool with:
 - LLM agent is much better than bash/grep scripts for subjective pattern recognition
 
 **The agent should:**
-1. Locate and read all relevant session files for the specified project/timeframe
+1. Locate and read all relevant session files for the specified project/timeframe OR analyze current conversation
 2. Apply the context-aware analysis logic defined below
 3. Generate a comprehensive report following the example output format
 4. Return the complete analysis for saving or presentation
 
 **Steps (for the subagent to follow):**
+
+**0. Determine Analysis Source:**
+
+Check what the user requested:
+
+**A. If analyzing current conversation:**
+- User said: "this conversation", "this chat", "current session"
+- User did NOT mention project paths or log files
+- **Action:** Analyze the conversation history available in current context
+
+**B. If analyzing historical logs:**
+- User mentioned: project path, "all projects", specific dates
+- User said: "my logs", "session files", "past conversations"
+- **Action:** Read `.jsonl` files from `~/.claude/projects/`
+
+**C. If unclear:**
+- Ask user: "Would you like me to analyze (1) this current conversation, or (2) historical logs from Claude Code sessions?"
+
+---
+
+**For Current Conversation Analysis:**
+
+1. Review the conversation history in current context
+   - Look at all messages with `role: "user"`
+   - Look at all messages with `role: "assistant"`
+   - Note: Messages are in chronological order
+
+2. For each user prompt:
+   - Extract the prompt text from content
+   - Check the following assistant message for clarifying questions
+   - Check the previous assistant message to see if user is answering a question
+
+3. Apply context-aware analysis:
+   - Use the same logic as historical log analysis (steps 3-10 below)
+   - Detect vague patterns, context-rich prompts, answering behavior
+   - Score using the same 0-10 scale
+
+4. Generate prompt quality report:
+   - Same format as file-based analysis
+   - Note: Skip time-based metrics (no timestamps)
+   - Note: Skip token metrics (no usage data)
+   - Focus on: prompt patterns, clarity, specificity, examples
+
+5. Inform user of limitations:
+   - "Note: This analysis is based on current conversation only. For comprehensive metrics (tokens, tools, time patterns), analyze historical Claude Code logs."
+
+---
+
+**For Historical Log Analysis:**
+
 1. Read recent session files (last 7-14 days)
 
 2. For each session, identify user prompts (type: "user")
@@ -1622,6 +1760,16 @@ find ~/.claude/projects -name "*.jsonl" | wc -l
 - "Which files do I edit most in the ~/code/dotfiles project?"
 - "Analyze my prompt quality for ~/code/my-app and save it as reports/prompt-analysis.md"
 
+### Current Conversation Analysis 💬
+- "Analyze this conversation"
+- "How good are my prompts in this chat?"
+- "Review the prompt quality in this current session"
+- "Analyze this chat and tell me how to improve"
+- "What's the quality of my prompts so far?"
+- "Give me feedback on this conversation"
+
+**Note:** These queries trigger current conversation analysis (no file reading). Only prompt quality analysis is available - no token usage, tool tracking, or time patterns.
+
 ## Important Notes
 
 - Always use existing tools (Read, Bash, Grep) - you have file access
@@ -1634,3 +1782,19 @@ find ~/.claude/projects -name "*.jsonl" | wc -l
 - **CRITICAL (v1.10.0+):** Always use model-specific pricing. Extract model from `message.model` field and apply correct rates. Opus is 5x more expensive than Sonnet!
 - **NEW (v1.10.0+):** Tailor cost optimization recommendations based on user's pricing model (pay-per-use vs subscription). Cache optimization is valuable for BOTH but for different reasons.
 - **NEW (v1.9.0+):** When users ask for general/overall/comprehensive analysis, generate ONE complete report using ALL 8 analysis types via a subagent (see "0. General Analysis Mode" section)
+- **NEW (v1.11.0+):** Current conversation analysis mode - analyze live chat sessions without log files. Works in Copilot Chat, Claude Code, and any environment with Claude skills enabled.
+
+## Version History
+
+### v1.11.0 (Current)
+- ✨ NEW: Current conversation analysis mode
+- 🔄 Dual-source support: Historical logs OR current chat
+- 🤝 Compatible with GitHub Copilot Chat (via `chat.useClaudeSkills`)
+- 📊 Automatic mode detection based on user query
+- ⚡ Real-time prompt quality feedback without log files
+
+### v1.10.0
+- General analysis mode with comprehensive reports
+- Task tool subagent support for complex analysis
+- Model-aware pricing (Opus, Sonnet, Haiku)
+- Pay-per-use vs subscription detection
